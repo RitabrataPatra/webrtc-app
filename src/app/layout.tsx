@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
+import SocketProvider from "@/providers/SocketProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
         >
+          <SocketProvider>
           <Header />
           <SignedIn>{children}</SignedIn>
 
@@ -39,7 +41,7 @@ export default function RootLayout({
               <h1 className="text-2xl font-semibold">Please sign in to use this app</h1>
             </div>
           </SignedOut>
-          
+          </SocketProvider>
         </body>
       </html>
     </ClerkProvider>

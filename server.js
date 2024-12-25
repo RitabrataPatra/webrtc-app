@@ -9,15 +9,30 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer);
-
+  let onlineUsers = [];
   io.on("connection", (socket) => {
-    // console.log(socket);
-    // console.log("a user connected");
+    //add user
+    socket.on("addNewUser", (clerkUser) => {
+      if (clerkUser && !onlineUsers.some((user) => user.userid === clerkUser.id)) {
+        onlineUsers.push({
+          userid: clerkUser.id,
+          socketId: socket.id,
+          profile: clerkUser,
+        });
+      }
+      io.emit("getOnlineUsers", onlineUsers);
+    });
+
+    socket.on("disconnect", () => {
+      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+
+      //send active users
+      io.emit("getOnlineUsers", onlineUsers);
+    });
   });
 
   httpServer

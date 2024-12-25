@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/nextjs";
 import { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { SocketUser } from "../../types";
 
 interface iSocketContext {
     
@@ -12,6 +13,9 @@ export const SocketContextProvider =  ({children} : {children: React.ReactNode})
     const {user} = useUser()
     const [socket , setSocket] = useState<Socket | null>(null);
     const[isConnected , setIsConnected] = useState(false);
+    const[onlineusers , setOnlineUsers] = useState<SocketUser[] | null>(null);
+
+    console.log(onlineusers);
 
     //initializing a socket
     console.log("is Socket Connected",isConnected);
@@ -47,6 +51,24 @@ export const SocketContextProvider =  ({children} : {children: React.ReactNode})
         }
         
     },[socket])
+
+
+    useEffect(() => {
+        if(!socket || !isConnected) return ;
+
+        socket.emit("addNewUser",user);
+        socket.on("getOnlineUsers" , (res)=>{
+            setOnlineUsers(res);
+        })
+
+        return ()=>{
+            socket.off("getOnlineUsers" , (res)=>{
+                setOnlineUsers(res);
+            });
+        }
+
+
+    },[socket , isConnected , user])
 
     return <SocketContext.Provider value={{}}>
         {children}

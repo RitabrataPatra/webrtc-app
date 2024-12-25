@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
-import { ClerkProvider, SignedIn } from "@clerk/nextjs";
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,15 +26,22 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Header />
-        <SignedIn>{children}</SignedIn>
-        
-      </body>
-    </html>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
+        >
+          <Header />
+          <SignedIn>{children}</SignedIn>
+
+          {/* show this if user is signed out */}
+          <SignedOut>
+            <div className="flex items-center justify-center h-screen">
+              <h1 className="text-2xl font-semibold">Please sign in to use this app</h1>
+            </div>
+          </SignedOut>
+          
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

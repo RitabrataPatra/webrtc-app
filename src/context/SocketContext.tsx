@@ -4,6 +4,7 @@ import { io, Socket } from "socket.io-client";
 import { SocketUser } from "../../types";
 
 interface iSocketContext {
+    onlineUsers : SocketUser[] | null
     
 }
 
@@ -13,9 +14,9 @@ export const SocketContextProvider =  ({children} : {children: React.ReactNode})
     const {user} = useUser()
     const [socket , setSocket] = useState<Socket | null>(null);
     const[isConnected , setIsConnected] = useState(false);
-    const[onlineusers , setOnlineUsers] = useState<SocketUser[] | null>(null);
+    const[onlineUsers , setOnlineUsers] = useState<SocketUser[] | null>(null);
 
-    console.log(onlineusers);
+    console.log(onlineUsers);
 
     //initializing a socket
     console.log("is Socket Connected",isConnected);
@@ -70,12 +71,12 @@ export const SocketContextProvider =  ({children} : {children: React.ReactNode})
 
     },[socket , isConnected , user])
 
-    return <SocketContext.Provider value={{}}>
+    return <SocketContext.Provider value={{onlineUsers}}>
         {children}
     </SocketContext.Provider>
 }
 
-export const useSockt = () => {
+export const useSocket = () => {
     const context = useContext(SocketContext);
     if (context === null) {
         throw new Error("useSocket must be used within a SocketContextProvider");
